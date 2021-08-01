@@ -1,0 +1,103 @@
+<!--
+    Original overlay code and implementation by SimpleAOB
+    Contact:
+        Discord - SimpleAOB#9999 (preferred)
+        Email - simple(@at)bakkesplugins(dot)com
+    Credits:
+        Default images and guidance on art by RJsaurus - https://twitter.com/deeposaurus
+        BakkesWebApi by gboddin - Heavily modified and extended by SimpleAOB
+            - Now available at: https://gitlab.com/bakkesplugins/sos/sos-plugin
+-->
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>SOS - Rocket League OBS Browser Source Overlay</title>
+    <style>
+        ${require('../out/css/main.min.css')}
+    </style>
+</head>
+<body>
+    <div class="page-container">
+        <div class="waiting-for-websocket">
+            <div class="technical-difficulties hidden"></div>
+            <div class="text">
+                Waiting for Websocket Server to connect...
+            </div>
+        </div>
+
+    <div class="winner-video">
+        <svg class="clipper">
+            <clipPath id="my-clip-path" clipPathUnits="objectBoundingBox"><path d="M1,0 L0.093,0 L0,0.124 L0,1 L0.999,1 L1,0"></path></clipPath>
+        </svg>
+        <div class="clipped-container">
+            <div class="background-color" style="background: #00203A"></div>
+            <div class="logo-greyscale"><img src="../team_logos/Rogue.png"></div>
+            <div class="logo-full"><img src="../team_logos/Rogue.png"></div>
+        </div>
+        <div class="name">rogue</div>
+    </div>
+    <script>${require('vendor/jquery-3.4.1/jquery-3.4.1.min.js')}</script>
+    <script>${require('../out/js/base.js')}</script>
+    <script>
+        //!!! Register the websocket listeners before attempting to connect
+        WsSubscribers.subscribe("ws", "open", function() {
+            $(".waiting-for-websocket").addClass("hidden");
+            WsSubscribers.send("cb", "first_connect", {
+                'name': 'Scorebug',
+                'version': ${require('../version.txt')}
+            });
+            setInterval(function () {
+                WsSubscribers.send("cb", "heartbeat", "heartbeat");
+            }, 1000);
+        });
+
+        WsSubscribers.subscribe("ws", "open", function() {
+            $(".waiting-for-websocket").addClass("hidden");
+        });
+
+        WsSubscribers.subscribe("ws", "error", function() {
+            $(".waiting-for-websocket .text").text("[002] There has been an error with the Rocket League connection. Please stand by");
+            $(".waiting-for-websocket").removeClass("hidden");
+        });
+
+        WsSubscribers.subscribe("ws", "close", function() {
+            $(".waiting-for-websocket .text").text("[004] Connection to Rocket League has gone away. Please stand by");
+            $(".waiting-for-websocket, .technical-difficulties").removeClass("hidden");
+        });
+
+        WsSubscribers.init(49322, true, [
+            "game:update_tick",
+            "cb:heartbeat"
+        ]);
+    </script>
+    <script>
+        let teams = {};
+        let teamMap = ${require('../../team_logos/map.json')};
+        WsSubscribers.subscribe("sos", "scorebug_teams_update", (d) => {
+            teams = d['teams'];
+        });
+        WsSubscribers.subscribe("game", "match_ended", (d) => {
+            let teamSide = "left";
+            if (d['winner_team_num'] === 1) {
+                teamSide = "right";
+            }
+            let nameLower = teams[teamSide].name.toLowerCase();
+            if (teamMap.hasOwnProperty(nameLower)) {
+                let team = teamMap[nameLower];
+                $(".winner-video .background-color").css('background-color', team.background);
+                $(".winner-video .logo-full img").attr('src',  `../team_logos/${team.logo}`);
+                $(".winner-video .logo-greyscale img").attr('src',  `../team_logos/${team.logo}`);
+            } else {
+                $(".winner-video .logo-full img").attr('src', `../team_logos/DEFAULT.png`);
+                $(".winner-video .logo-greyscale img").attr('src', `../team_logos/DEFAULT.png`);
+                $(".winner-video .background-color").css('background-color', '#324044');
+            }
+            $(".winner-video .name").text(teams[teamSide].name);
+            SOSUtils.fitText(".winner-video .name", 55);
+        });
+    </script>
+    <script>${require('sos-plugins/testing/js/testing.js')}</script>
+</body>
+</html>

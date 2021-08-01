@@ -1,0 +1,172 @@
+<!--
+    Original overlay code and implementation by SimpleAOB
+    Contact:
+        Discord - SimpleAOB#9999 (preferred)
+        Email - simple(@at)bakkesplugins(dot)com
+    Credits:
+        Default images and guidance on art by RJsaurus - https://twitter.com/deeposaurus
+        BakkesWebApi by gboddin - Heavily modified and extended by SimpleAOB
+            - Now available at: https://gitlab.com/bakkesplugins/sos/sos-plugin
+-->
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>SOS - Rocket League OBS Browser Source Overlay</title>
+    <style>
+        ${require('../out/css/main.min.css')}
+    </style>
+</head>
+<body>
+    <div class="page-container">
+        <div class="waiting-for-websocket">
+            <div class="technical-difficulties hidden"></div>
+            <div class="text">
+                Waiting for Websocket Server to connect...
+            </div>
+        </div>
+        <div class="scorebug">
+            <div class="stat-popunder" style="background: #0090d3">
+                <div class="popunder-wrapper">
+                    <div class="caret">&gt;</div>
+                    <div class="stat-text"></div>
+                </div>
+                <div class="reveal-plus"></div>
+            </div>
+            <div class="main-scorebug-wrapper">
+                <div class="team left">
+                    <div class="name-tile">
+                        <div class="bg" style="background: #0090d3"></div>
+                        <div class="logo"><img></div>
+                        <div class="t-text">0</div>
+                    </div>
+                    <div class="score-outer"><div class="score"></div></div>
+                </div>
+                <div class="team right">
+                    <div class="name-tile">
+                        <div class="bg" style="background: #f26522"></div>
+                        <div class="logo"><img></div>
+                        <div class="t-text">0</div>
+                    </div>
+                    <div class="score-outer"><div class="score"></div></div>
+                </div>
+                <div class="clock">99:99</div>
+                <div class="game-number">G1</div>
+                <div class="covert-logo"><img src="assets/covert_full_logo.png"></div>
+            </div>
+        </div>
+    </div>
+    <script>${require('vendor/jquery-3.4.1/jquery-3.4.1.min.js')}</script>
+    <script>${require('../out/js/base.js')}</script>
+    <script>
+        //!!! Register the websocket listeners before attempting to connect
+        WsSubscribers.subscribe("ws", "open", function() {
+            $(".waiting-for-websocket").addClass("hidden");
+            WsSubscribers.send("cb", "first_connect", {
+                'name': 'Scorebug',
+                'version': ${require('../version.txt')}
+            });
+            setInterval(function () {
+                WsSubscribers.send("cb", "heartbeat", "heartbeat");
+            }, 1000);
+        });
+
+        WsSubscribers.subscribe("ws", "open", function() {
+            $(".waiting-for-websocket").addClass("hidden");
+        });
+
+        WsSubscribers.subscribe("ws", "error", function() {
+            $(".waiting-for-websocket .text").text("[002] There has been an error with the Rocket League connection. Please stand by");
+            $(".waiting-for-websocket").removeClass("hidden");
+        });
+
+        WsSubscribers.subscribe("ws", "close", function() {
+            $(".waiting-for-websocket .text").text("[004] Connection to Rocket League has gone away. Please stand by");
+            $(".waiting-for-websocket, .technical-difficulties").removeClass("hidden");
+        });
+
+        WsSubscribers.init(49322, false, [
+            "game:update_state",
+            "cb:heartbeat"
+        ]);
+    </script>
+    <script>
+        function secondsToTime(seconds, showMs) {
+            return (new Date(seconds * 1000)).toISOString().substr(showMs ? 17 : 15, 4);
+        }
+    </script>
+    <script>
+        WsSubscribers.subscribe("sos", "scorebug_teams_update", (d) => {
+            $(".scorebug .team.left .t-text").text(d.teams.left.abbreviation);
+            
+            $(".scorebug .team.right .t-text").text(d.teams.right.abbreviation);
+
+            $(".scorebug .game-number").text("G"+d.gameNumber);
+            SOSUtils.fitText(".scorebug .team .t-text", 48);
+
+            let leftLower = d.teams.left.name.toLowerCase();
+            let rightLower = d.teams.right.name.toLowerCase();
+
+        });
+        WsSubscribers.subscribe("sos", "popunder_show", (d) => {
+            let $popunder = $(".scorebug .stat-popunder .stat-text");
+            $popunder.text(d.message);
+            let contentWidth = $popunder[0].scrollWidth;
+
+            let $wrapper = $('.scorebug .stat-popunder');
+
+            let teamColor = "";
+            if (d.team === "left") {
+                teamColor = "#0090d3";
+            } else if (d.team === "right") {
+                teamColor = "#f26522";
+            }
+            $wrapper.css('background', teamColor);
+
+            $wrapper.addClass("show");
+            setTimeout(function () {
+                $(".scorebug .stat-popunder").css("width", (contentWidth+53+50)+"px").css("height", "61px");
+            }, 150);
+            setTimeout(function () {
+                $(".scorebug .stat-popunder").css("width", 0).css("height", 0);
+                setTimeout(function () {
+                    $wrapper.removeClass("show");
+                }, 350);
+            }, 10000);
+        });
+
+        let updateTeamScores = false;
+        let showNoTimeInClock = false;
+        WsSubscribers.subscribe("game", "match_created", () => {
+            showNoTimeInClock = false;
+            $(".scorebug .team .score").text("0");
+            $(".score .clock").text("5:00");
+        });
+        WsSubscribers.subscribe("game", "match_ended", () => {
+            showNoTimeInClock = true;
+        });
+        WsSubscribers.subscribe("game", "goal_scored", () => {
+            updateTeamScores = true;
+        });
+        WsSubscribers.subscribe("game", "update_state", (d) => {
+            if (showNoTimeInClock) {
+                $('.scorebug .clock').text('00.0');
+            } else {
+                $('.scorebug .clock').text(
+                    (d['game']['isOT'] ? '+' : '') + secondsToTime(d['game']['time'],
+                    d['game']['time'] < 60 && !d['game']['isOT'])
+                );
+            }
+
+            if (updateTeamScores) {
+                updateTeamScores = false;
+                $(".scorebug .team.left .score").text(d['game']['teams'][0]['score']);
+                $(".scorebug .team.right .score").text(d['game']['teams'][1]['score']);
+            }
+        });
+    </script>
+    <script>${require('sos-plugins/stinger/js/stinger.js')}</script>
+    <script>${require('sos-plugins/testing/js/testing.js')}</script>
+</body>
+</html>

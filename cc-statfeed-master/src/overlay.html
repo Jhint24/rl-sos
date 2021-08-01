@@ -1,0 +1,258 @@
+<!--
+    Original overlay code and implementation by SimpleAOB
+    Contact:
+        Discord - SimpleAOB#9999 (preferred)
+        Email - simple(@at)bakkesplugins(dot)com
+    Credits:
+        Default images and guidance on art by RJsaurus - https://twitter.com/deeposaurus
+        BakkesWebApi by gboddin - Heavily modified and extended by SimpleAOB
+            - Now available at: https://gitlab.com/bakkesplugins/sos/sos-plugin
+-->
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>SOS - Rocket League OBS Browser Source Overlay</title>
+    <style>
+        ${require('../out/css/main.min.css')}
+    </style>
+</head>
+<body>
+    <div class="page-container">
+        <div class="waiting-for-websocket">
+            <div class="technical-difficulties hidden"></div>
+            <div class="text">
+                Waiting for Websocket Server to connect...
+            </div>
+        </div>
+        <div class="events"></div>
+
+        <!--
+        This box below is needed in order to do text size calculations.
+        Loads in the font file since the browser does that later than when the text is first applied
+        -->
+        <div style="opacity: 0; font-family: 'Lustra Text SemiBold'">PRIMER</div>
+    </div>
+    <script>${require('vendor/jquery-3.4.1/jquery-3.4.1.min.js')}</script>
+    <script>${require('../out/js/base.js')}</script>
+    <script>
+        //!!! Register the websocket listeners before attempting to connect
+        WsSubscribers.subscribe("ws", "open", function() {
+            $(".waiting-for-websocket").addClass("hidden");
+            WsSubscribers.send("cb", "first_connect", {
+                'name': 'Statfeed',
+                'version': ${require('../version.txt')}
+            });
+            setInterval(function () {
+                WsSubscribers.send("cb", "heartbeat", "heartbeat");
+            }, 1000);
+        });
+
+        WsSubscribers.subscribe("ws", "open", function() {
+            $(".waiting-for-websocket").addClass("hidden");
+        });
+
+        WsSubscribers.subscribe("ws", "error", function() {
+            $(".waiting-for-websocket .text").text("[002] There has been an error with the Rocket League connection. Please stand by");
+            $(".waiting-for-websocket").removeClass("hidden");
+        });
+
+        WsSubscribers.subscribe("ws", "close", function() {
+            $(".waiting-for-websocket .text").text("[004] Connection to Rocket League has gone away. Please stand by");
+            $(".waiting-for-websocket, .technical-difficulties").removeClass("hidden");
+        });
+
+        WsSubscribers.init(49322, false, [
+            "game:update_state",
+            "cb:heartbeat"
+        ]);
+    </script>
+    <script>
+        let playerMap = {};
+        let events = [];
+        let displayConversionMap = {
+            "Shot on Goal": "Shot",
+            "Demolition": "Demo",
+            "Clear Ball": "Clear",
+        }
+
+        let eventsWithSecondaryTargets = ['Demolition'];
+
+        function addEvent(event, primaryTargetName, secondaryTargetName, team) {
+            let teamColor = "";
+            let secondaryColor = "";
+            if (team === "left") {
+                teamColor = "#0090d3";
+                secondaryColor = "#f26522";
+            } else if (team === "right") {
+                teamColor = "#f26522";
+                secondaryColor = "#0090d3";
+            }
+
+            let eventDisplay = displayConversionMap.hasOwnProperty(event) ? displayConversionMap[event] : event;
+
+            let leftEdge = `<svg xmlns="http://www.w3.org/2000/svg" width="40px" height="154px">
+                                <path fill-rule="evenodd"  fill="${teamColor}" d="M40,0 L36,0 L0,36 L0,154 L40,154 L40,0"/>
+                            </svg>`;
+            let rightEdge = `<svg xmlns="http://www.w3.org/2000/svg" width="40px" height="154px">
+                                 <path fill-rule="evenodd"  fill="${teamColor}" d="M40,0 L0,0 L0,154 L8,154 L8,103 L40,71 L40,0"/>
+                             </svg>`;
+
+            let primaryNameTextWidth = getTextWidth(primaryTargetName.toUpperCase(), "64px \"Lustra Text SemiBold\"");
+            let eventTextWidth = getTextWidth(eventDisplay.toUpperCase(), "64px \"Lustra Text SemiBold\"");
+            let eventWidth = eventTextWidth+80;
+            let eventLeft = primaryNameTextWidth+38;
+
+            let secondaryTarget = {text: "", width: 0};
+            if (eventsWithSecondaryTargets.indexOf(event) > -1) {
+                secondaryTarget = addSecondaryEventTarget(secondaryTargetName, secondaryColor, eventWidth+eventLeft);
+            }
+
+            return {
+                text: `
+               <div class="primary-target-stat">
+                   <div class="event" style="width: ${eventWidth}px; left: ${eventLeft}px">
+                       <div class="icon" style="left: ${((eventTextWidth+60)/2)-64}px"><img src="assets/point_icons/${event.replace(/\s/g, '_')}_points_icon.png"></div>
+                       <div class="text">${eventDisplay}</div>
+                    </div>
+                   <div class="player" style="width: ${primaryNameTextWidth+60}px">
+                       <div class="leftEdge">${leftEdge}</div>
+                       <div class="rightEdge">${rightEdge}</div>
+                       <div class="name" style="width: ${primaryNameTextWidth+40}px; background: ${teamColor}">${primaryTargetName}</div>
+                   </div>
+                    ${secondaryTarget.text}
+                </div>`,
+                width: (primaryNameTextWidth+60) + eventWidth + secondaryTarget.width
+            };
+        }
+
+        function addSecondaryEventTarget(secondaryTargetName, color, left) {
+            let leftEdge = `<svg xmlns="http://www.w3.org/2000/svg" width="110px" height="154px">
+                                <path fill-rule="evenodd"  fill="${color}" d="M0,154 L110,154 L110,0 L31,0 L31,69 L0,101 L0,154"/>
+                            </svg>`;
+            let rightEdge = `<svg xmlns="http://www.w3.org/2000/svg" width="50px" height="154px">
+                                 <path fill-rule="evenodd"  fill="${color}" d="M0,154 L13,154 L50,117 L50,0 L0,0 L0,154"/>
+                             </svg>`;
+
+            let primaryNameTextWidth = getTextWidth(secondaryTargetName.toUpperCase(), "64px \"Lustra Text SemiBold\"");
+            return {
+                text: `
+               <div class="secondary-target-stat" style="width: ${primaryNameTextWidth+60}px; left: ${left+8}px">
+                   <div class="player" style="width: ${primaryNameTextWidth+60}px">
+                       <div class="leftEdge">${leftEdge}</div>
+                       <div class="rightEdge">${rightEdge}</div>
+                       <div class="name" style="width: ${primaryNameTextWidth+40}px; background: ${color}">${secondaryTargetName}</div>
+                   </div>
+                </div>`,
+                width: primaryNameTextWidth+60
+            };
+        }
+
+        function addCustomEvent(text) {
+            let leftEdge = `<svg xmlns="http://www.w3.org/2000/svg" width="40px" height="154px">
+                                <path fill-rule="evenodd"  fill="#393939" d="M40,0 L36,0 L0,36 L0,154 L40,154 L40,0"/>
+                            </svg>`;
+
+            let primaryNameTextWidth = getTextWidth(text.toUpperCase(), "64px \"Lustra Text SemiBold\"");
+            console.log(primaryNameTextWidth);
+            return {
+                text: `
+               <div class="primary-target-stat">
+                   <div class="player" style="width: ${primaryNameTextWidth+60}px">
+                       <div class="leftEdge"  style="left: -38px">${leftEdge}</div>
+                       <div class="name" style="width: ${primaryNameTextWidth+40}px; background: #393939">${text.toUpperCase()}</div>
+                   </div>
+                </div>`,
+                width: primaryNameTextWidth+60
+            }
+        }
+
+        let canvas = document.createElement("canvas");
+        function getTextWidth(text, font) {
+            // re-use canvas object for better performance -- https://stackoverflow.com/a/21015393
+            let context = canvas.getContext("2d");
+            context.font = font;
+            let metrics = context.measureText(text);
+            return Math.ceil(metrics.width);
+        }
+
+        let eventCooldowns = {};
+        WsSubscribers.subscribe("game", "statfeed_event", d => {
+            let cdCheck = d.type+d.main_target;
+            if (eventCooldowns.hasOwnProperty(cdCheck)) {
+                if ((+new Date()) - eventCooldowns[cdCheck] < 50) {
+                    return;
+                }
+            }
+            eventCooldowns[cdCheck] = +new Date();
+
+            let eid = SOSUtils.uniqueId("e");
+            let event = addEvent(d.type, d.main_target, d.secondary_target, playerMap[d.main_target.toLowerCase()]);
+            let fullStat = `<div id="${eid}" class="stat-container" style="width: ${event.width}px">${event.text}</div>`
+
+            //Make place for a new 5th
+            while (events.length > 4) {
+                let removeId = events.shift();
+                $("#"+removeId).removeClass('show');
+                setTimeout(function () {
+                    $("#"+removeId).remove();
+                }, 560);
+            }
+
+            $('.events').append(fullStat);
+            events.push(eid);
+            let $e = $("#"+eid);
+            setTimeout(function () {
+                $e.addClass('show');
+            }, 50);
+
+            setTimeout(function () {
+                if (events.indexOf(eid) > -1) {
+                    events.shift();
+                    $e.addClass('fly-out');
+                    setTimeout(function () {
+                        $e.remove();
+                    }, 560);
+                }
+            }, 5000);
+        });
+
+        WsSubscribers.subscribe("sos", "statfeed_custom", (d) => {
+            let eid = SOSUtils.uniqueId("e");
+            let event = addCustomEvent(d.text);
+            let fullStat = `<div id="${eid}" class="stat-container" style="width: ${event.width}px">${event.text}</div>`
+
+            $('.events').append(fullStat);
+            events.push(eid);
+            let $e = $("#"+eid);
+            setTimeout(function () {
+                $e.addClass('show');
+            }, 50);
+
+            setTimeout(function () {
+                if (events.indexOf(eid) > -1) {
+                    events.shift();
+                    $e.addClass('fly-out');
+                    setTimeout(function () {
+                        $e.remove();
+                    }, 560);
+                }
+            }, 15000);
+        });
+
+        WsSubscribers.subscribe("game", "match_created", () => {
+            playerMap = {};
+        });
+        WsSubscribers.subscribe("game", "update_state", d => {
+            for (let player in d.players) {
+                if (!d.players.hasOwnProperty(player) || d.players[player].team > 3) {
+                    continue;
+                }
+                playerMap[d.players[player].name.toLowerCase()] = d.players[player].team === 0 ? 'left' : 'right';
+            }
+        });
+    </script>
+    <script>${require('sos-plugins/testing/js/testing.js')}</script>
+</body>
+</html>

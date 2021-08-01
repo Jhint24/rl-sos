@@ -1,0 +1,55 @@
+.events
+  width: 100%
+  height: 100%
+  font-family: "Lustra Text SemiBold"
+  font-size: 64px
+  text-transform: uppercase
+  color: white
+  line-height: 154px
+  display: flex
+  flex-direction: column
+  align-items: flex-end
+  .stat-container
+    div
+      position: absolute
+    margin-top: 20px
+    height: 154px
+    transition: opacity 500ms ease-out, margin-right 550ms ease-out
+    opacity: 0
+    margin-right: 600px
+    &.show
+      opacity: 1
+      margin-right: 0
+    &.fly-out
+      opacity: 0
+      margin-right: -800px
+  .event
+    background-color: #393939
+    height: 100%
+    .text
+      text-align: center
+      width: 100%
+    .icon
+      height: 128px
+      width: 128px
+      top: 9px
+      opacity: 0.25
+      img
+        height: 100%
+        width: 100%
+  .secondary-target-stat, .primary-target-stat
+    height: 154px
+    .player
+      height: 100%
+      .name
+        text-align: center
+      .leftEdge
+        left: 0
+      .rightEdge
+        right: 0
+    .secondary-target-stat
+      .player
+        .leftEdge
+          left: -40px
+        .rightEdge
+          right: -20px

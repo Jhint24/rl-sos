@@ -1,0 +1,374 @@
+<!--
+
+Coded by Slumware(#9370)
+Please follow me on YouTube and Twitch
+
+-->
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <title>Yeet</title>
+    <script src="https://cdn.jsdelivr.net/npm/lodash@4.17.15/lodash.min.js"></script>
+    <script src="logic.js"></script>
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <link
+      rel="stylesheet"
+      href="https://cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/4.5.0/css/bootstrap.min.css"
+    />
+    <link
+      rel="stylesheet"
+      href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.14.0/css/all.min.css"
+    />
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Roboto:wght@700&display=swap"
+      rel="stylesheet"
+    />
+    <link rel="stylesheet" href="./style.css" />
+  </head>
+
+  <body>
+    <!-- partial:index.partial.html -->
+    <div class="contianer h-100 invisible" id="main-ui">
+      <div class="row h-100">
+        <!-- blue team code-->
+        <div class="col m-4">
+          <div class="h-100 d-flex align-items-start flex-column">
+            <!-- blue team boxes-->
+            <div class="">
+              <!-- blue player 3 -->
+              <div
+                class="
+                  player-box
+                  border border-dark
+                  bg-blue-team
+                  rounded
+                  mt-2
+                  d-none
+                "
+                id="blue-player-3"
+              >
+                <!-- players name -->
+                <h4 class="text-center" id="blue-player-3-name">name</h4>
+                <!-- boost bar -->
+                <div
+                  class="progress mx-auto border border-dark"
+                  style="height: 20px; width: 270px"
+                >
+                  <div
+                    class="progress-bar bg-dark"
+                    role="progressbar"
+                    style="width: 25%"
+                    aria-valuenow="25"
+                    aria-valuemin="0"
+                    aria-valuemax="100"
+                    id="blue-player-3-p-bar"
+                  >
+                    <span class="text-light" id="blue-player-3-boost">20%</span>
+                  </div>
+                </div>
+                <!-- stat counters -->
+                <div class="container pt-2">
+                  <div class="row">
+                    <div class="col-sm-1"></div>
+                    <div class="col-sm-1"><i class="fas fa-futbol"></i></div>
+                    <div class="col-sm-1" id="blue-player-3-goals">1</div>
+                    <div class="col-sm-1">
+                      <i class="fas fa-hands-helping"></i>
+                    </div>
+                    <div class="col-sm-1" id="blue-player-3-assists">1</div>
+                    <div class="col-sm-1">
+                      <i class="fas fa-shield-alt"></i>
+                    </div>
+                    <div class="col-sm-1" id="blue-player-3-saves">1</div>
+                    <div class="col-sm-1"><i class="fas fa-bullseye"></i></div>
+                    <div class="col-sm-1" id="blue-player-3-shots">1</div>
+                    <div class="col-sm-1"></div>
+                  </div>
+                </div>
+              </div>
+
+              <!-- blue player 2 -->
+              <div
+                class="
+                  player-box
+                  border border-dark
+                  bg-blue-team
+                  rounded
+                  mt-2
+                  d-none
+                "
+                id="blue-player-2"
+              >
+                <!-- players name -->
+                <h4 class="text-center" id="blue-player-2-name">name</h4>
+                <!-- boost bar -->
+                <div
+                  class="progress mx-auto border border-dark"
+                  style="height: 20px; width: 270px"
+                >
+                  <div
+                    class="progress-bar bg-dark"
+                    role="progressbar"
+                    style="width: 25%"
+                    aria-valuenow="25"
+                    aria-valuemin="0"
+                    aria-valuemax="100"
+                    id="blue-player-2-p-bar"
+                  >
+                    <span class="text-light" id="blue-player-2-boost">20%</span>
+                  </div>
+                </div>
+                <!-- stat counters -->
+                <div class="container pt-2">
+                  <div class="row">
+                    <div class="col-sm-1"></div>
+                    <div class="col-sm-1"><i class="fas fa-futbol"></i></div>
+                    <div class="col-sm-1" id="blue-player-2-goals">1</div>
+                    <div class="col-sm-1">
+                      <i class="fas fa-hands-helping"></i>
+                    </div>
+                    <div class="col-sm-1" id="blue-player-2-assists">1</div>
+                    <div class="col-sm-1">
+                      <i class="fas fa-shield-alt"></i>
+                    </div>
+                    <div class="col-sm-1" id="blue-player-2-saves">1</div>
+                    <div class="col-sm-1"><i class="fas fa-bullseye"></i></div>
+                    <div class="col-sm-1" id="blue-player-2-shots">1</div>
+                    <div class="col-sm-1"></div>
+                  </div>
+                </div>
+              </div>
+
+              <!-- blue player 1 -->
+              <div
+                class="
+                  player-box
+                  border border-dark
+                  bg-blue-team
+                  rounded
+                  mt-2
+                  d-none
+                "
+                id="blue-player-1"
+              >
+                <!-- players name -->
+                <h4 class="text-center" id="blue-player-1-name">name</h4>
+                <!-- boost bar -->
+                <div
+                  class="progress mx-auto border border-dark"
+                  style="height: 20px; width: 270px"
+                >
+                  <div
+                    class="progress-bar bg-dark"
+                    role="progressbar"
+                    style="width: 25%"
+                    aria-valuenow="25"
+                    aria-valuemin="0"
+                    aria-valuemax="100"
+                    id="blue-player-1-p-bar"
+                  >
+                    <span class="text-light" id="blue-player-1-boost">20%</span>
+                  </div>
+                </div>
+                <!-- stat counters -->
+                <div class="container pt-2">
+                  <div class="row">
+                    <div class="col-sm-1"></div>
+                    <div class="col-sm-1"><i class="fas fa-futbol"></i></div>
+                    <div class="col-sm-1" id="blue-player-1-goals">1</div>
+                    <div class="col-sm-1">
+                      <i class="fas fa-hands-helping"></i>
+                    </div>
+                    <div class="col-sm-1" id="blue-player-1-assists">1</div>
+                    <div class="col-sm-1">
+                      <i class="fas fa-shield-alt"></i>
+                    </div>
+                    <div class="col-sm-1" id="blue-player-1-saves">1</div>
+                    <div class="col-sm-1"><i class="fas fa-bullseye"></i></div>
+                    <div class="col-sm-1" id="blue-player-1-shots">1</div>
+                    <div class="col-sm-1"></div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+        <!-- orange team code -->
+        <div class="col m-4">
+          <div class="h-100 d-flex align-items-end flex-column">
+            <!-- orange team boxes-->
+            <div class="">
+              <!-- orange player 3 -->
+              <div
+                class="
+                  player-box
+                  border border-dark
+                  bg-orange-team
+                  rounded
+                  mt-2
+                  d-none
+                "
+                id="orange-player-3"
+              >
+                <!-- players name -->
+                <h4 class="text-center" id="orange-player-3-name">name</h4>
+                <!-- boost bar -->
+                <div
+                  class="progress mx-auto border border-dark"
+                  style="height: 20px; width: 270px"
+                >
+                  <div
+                    class="progress-bar bg-dark"
+                    role="progressbar"
+                    style="width: 0%"
+                    aria-valuenow="25"
+                    aria-valuemin="0"
+                    aria-valuemax="100"
+                    id="orange-player-3-p-bar"
+                  >
+                    <span class="text-light" id="orange-player-3-boost"
+                      >20%</span
+                    >
+                  </div>
+                </div>
+                <!-- stat counters -->
+                <div class="container pt-2">
+                  <div class="row">
+                    <div class="col-sm-1"></div>
+                    <div class="col-sm-1"><i class="fas fa-futbol"></i></div>
+                    <div class="col-sm-1" id="orange-player-3-goals">1</div>
+                    <div class="col-sm-1">
+                      <i class="fas fa-hands-helping"></i>
+                    </div>
+                    <div class="col-sm-1" id="orange-player-3-assists">1</div>
+                    <div class="col-sm-1">
+                      <i class="fas fa-shield-alt"></i>
+                    </div>
+                    <div class="col-sm-1" id="orange-player-3-saves">1</div>
+                    <div class="col-sm-1"><i class="fas fa-bullseye"></i></div>
+                    <div class="col-sm-1" id="orange-player-3-shots">1</div>
+                    <div class="col-sm-1"></div>
+                  </div>
+                </div>
+              </div>
+
+              <!-- orange player 2 -->
+              <div
+                class="
+                  player-box
+                  border border-dark
+                  bg-orange-team
+                  rounded
+                  mt-2
+                  d-none
+                "
+                id="orange-player-2"
+              >
+                <!-- players name -->
+                <h4 class="text-center" id="orange-player-2-name">name</h4>
+                <!-- boost bar -->
+                <div
+                  class="progress mx-auto border border-dark"
+                  style="height: 20px; width: 270px"
+                >
+                  <div
+                    class="progress-bar bg-dark"
+                    role="progressbar"
+                    style="width: 0%"
+                    aria-valuenow="25"
+                    aria-valuemin="0"
+                    aria-valuemax="100"
+                    id="orange-player-2-p-bar"
+                  >
+                    <span class="text-light" id="orange-player-2-boost"
+                      >20%</span
+                    >
+                  </div>
+                </div>
+                <!-- stat counters -->
+                <div class="container pt-2">
+                  <div class="row">
+                    <div class="col-sm-1"></div>
+                    <div class="col-sm-1"><i class="fas fa-futbol"></i></div>
+                    <div class="col-sm-1" id="orange-player-2-goals">1</div>
+                    <div class="col-sm-1">
+                      <i class="fas fa-hands-helping"></i>
+                    </div>
+                    <div class="col-sm-1" id="orange-player-2-assists">1</div>
+                    <div class="col-sm-1">
+                      <i class="fas fa-shield-alt"></i>
+                    </div>
+                    <div class="col-sm-1" id="orange-player-2-saves">1</div>
+                    <div class="col-sm-1"><i class="fas fa-bullseye"></i></div>
+                    <div class="col-sm-1" id="orange-player-2-shots">1</div>
+                    <div class="col-sm-1"></div>
+                  </div>
+                </div>
+              </div>
+
+              <!-- orange player 1 -->
+              <div
+                class="
+                  player-box
+                  border border-dark
+                  bg-orange-team
+                  rounded
+                  mt-2
+                  d-none
+                "
+                id="orange-player-1"
+              >
+                <!-- players name -->
+                <h4 class="text-center" id="orange-player-1-name">name</h4>
+                <!-- boost bar -->
+                <div
+                  class="progress mx-auto border border-dark"
+                  style="height: 20px; width: 270px"
+                >
+                  <div
+                    class="progress-bar bg-dark"
+                    role="progressbar"
+                    style="width: 0%"
+                    aria-valuenow="25"
+                    aria-valuemin="0"
+                    aria-valuemax="100"
+                    id="orange-player-1-p-bar"
+                  >
+                    <span class="text-light" id="orange-player-1-boost"
+                      >20%</span
+                    >
+                  </div>
+                </div>
+                <!-- stat counters -->
+
+                <div class="container pt-2">
+                  <div class="row">
+                    <div class="col-sm-1"></div>
+                    <div class="col-sm-1"><i class="fas fa-futbol"></i></div>
+                    <div class="col-sm-1" id="orange-player-1-goals">1</div>
+                    <div class="col-sm-1">
+                      <i class="fas fa-hands-helping"></i>
+                    </div>
+                    <div class="col-sm-1" id="orange-player-1-assists">1</div>
+                    <div class="col-sm-1">
+                      <i class="fas fa-shield-alt"></i>
+                    </div>
+                    <div class="col-sm-1" id="orange-player-1-saves">1</div>
+                    <div class="col-sm-1"><i class="fas fa-bullseye"></i></div>
+                    <div class="col-sm-1" id="orange-player-1-shots">1</div>
+                    <div class="col-sm-1"></div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/4.5.0/js/bootstrap.min.js"></script>
+  </body>
+</html>

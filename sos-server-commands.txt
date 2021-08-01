@@ -1,0 +1,8 @@
+cd C:\Users\Jsu\Desktop\SOS\sos-ws-relay
+node ws-relay.js
+
+generate css/js
+
+cd folder
+npm i
+npm run compile

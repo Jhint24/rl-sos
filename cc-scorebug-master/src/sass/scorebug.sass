@@ -1,0 +1,128 @@
+.scorebug
+  position: absolute
+  top: 21px
+  left: 24px
+  width: 859px
+  height: 94px
+  font-family: "Lustra Text SemiBold"
+  color: white
+  .main-scorebug-wrapper
+    position: absolute
+    top: 0
+    left: 0
+    width: 100%
+    height: 100%
+    clip-path: polygon(0% 0%, 100% 0%, 100% 100%, 0 100%) //Only content physically inside the box is visible
+  .team
+    position: absolute
+    width: 272px
+    height: 100%
+    &.left
+      left: 0
+    &.right
+      left: 272px
+    .name-tile
+      position: absolute
+      top: 0
+      left: 0
+      height: 100%
+      .bg
+        position: absolute
+        top: 0
+        left: 0
+        height: 100%
+        width: 200px
+      .t-text
+        position: absolute
+        top: 18px
+        font-size: 48px
+        text-align: center
+        width: 198px
+    .logo
+      position: absolute
+      top: -30px
+      left: 20px
+      height: 150px
+      width: 150px
+      img
+        height: 100%
+        width: 100%
+        object-fit: contain
+        opacity: 0.2
+        filter: grayscale(100%)
+    .score-outer
+      position: absolute
+      top: 0
+      left: 179px
+      background-image: url('assets/socrebug_score_tick_1.png')
+      width: 93px
+      height: 100%
+      .score
+        position: absolute
+        font-size: 55px
+        top: 22px
+        left: 19px
+        line-height: 1
+        width: 74px
+        text-align: center
+  .clock, .covert-logo
+    position: absolute
+    top: 0
+    padding-top: 15px
+    font-size: 53px
+    text-align: center
+    height: 100%
+  .clock
+    color: black
+    background-color: white
+    left: 545px
+    width: 211px
+  .game-number
+    color: white
+    background-color: rgb(29, 29, 29)
+    left: 756px
+    width: 103px
+    display: none
+  .covert-logo
+    left: 756px
+    width: 103px
+    padding-top: 0
+    img
+      height: 100%
+      width: 100%
+
+  .stat-popunder
+    position: absolute
+    top: 100px
+    opacity: 0
+    position: absolute
+    text-transform: uppercase
+    height: 0
+    width: 0
+    font-size: 25px
+    transition: opacity 300ms, height 500ms cubic-bezier(.66,-0.01,.25,.99), width 500ms cubic-bezier(.66,-0.01,.25,.99)
+    .popunder-wrapper
+      position: absolute
+      top: 0
+      left: 0
+      width: 100%
+      height: 100%
+      clip-path: polygon(0% 0%, 100% 0%, 100% 100%, 0 100%) //Only content physically inside the box is visible
+    &.show
+      opacity: 1
+    .reveal-plus
+      position: absolute
+      bottom: -6px
+      right: -6px
+      height: 14px
+      width: 14px
+      background-image: url("assets/statbox-reveal-plus.png")
+    .caret
+      position: absolute
+      top: 11px
+      left: 24px
+    .stat-text
+      position: absolute
+      top: 11px
+      white-space: nowrap
+      left: 53px
